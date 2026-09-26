@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attività Campus</title>
+    <link rel="stylesheet" href="assets/campus-theme.css">
+    <link rel="stylesheet" href="assets/campus-activities.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <div>
+                <h1>Attività del Campus</h1>
+                <p class="subtitle">Calendario settimanale</p>
+            </div>
+            <div class="header-datetime">
+                <div id="todayDate">--/--/----</div>
+                <div id="digitalClock">--:--:--</div>
+            </div>
+        </header>
+
+        <!-- Le card verranno generate qui via JavaScript -->
+        <div class="day-container" id="dayContainer">
+            <p style="color:var(--text-2);font-family:var(--font-mono);">Caricamento attività...</p>
+        </div>
+
+        <div class="qr-container">
+            <h3>Iscriviti alle attività</h3>
+            <p>Scansiona il QR code con il tuo smartphone:</p>
+            <div class="qr-code">
+                <img id="qrImage" alt="QR Code">
+            </div>
+            <p id="qrFallback" style="display:none; margin-top:10px;">
+                <small>Oppure apri questo link: <a id="qrLink" href="#"></a></small>
+            </p>
+            <p><small>Riservato agli iscritti nella mailing list.</small></p>
+        </div>
+    </div>
+
+    <script src="assets/attiv-script.js"></script>
+
+    <!-- Generazione QR dinamico -->
+    <script>
+        (function () {
+            const subscribeUrl = new URL('subscribe/subscribe.html', window.location.href).href;
+            const img = document.getElementById('qrImage');
+            const fallback = document.getElementById('qrFallback');
+            const link = document.getElementById('qrLink');
+            link.href = subscribeUrl;
+            link.textContent = subscribeUrl;
+            img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' +
+                      encodeURIComponent(subscribeUrl);
+            img.addEventListener('error', () => {
+                img.style.display = 'none';
+                fallback.style.display = 'block';
+            });
+        })();
+    </script>
+</body>
+</html>
