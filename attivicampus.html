@@ -25,37 +25,73 @@
             <p style="color:var(--text-2);font-family:var(--font-mono);">Caricamento attività...</p>
         </div>
 
-        <div class="qr-container">
-            <h3>Iscriviti alle attività</h3>
-            <p>Scansiona il QR code con il tuo smartphone:</p>
-            <div class="qr-code">
-                <img id="qrImage" alt="QR Code">
-            </div>
-            <p id="qrFallback" style="display:none; margin-top:10px;">
-                <small>Oppure apri questo link: <a id="qrLink" href="#"></a></small>
-            </p>
-            <p><small>Riservato agli iscritti nella mailing list.</small></p>
-        </div>
+       <div class="qr-container">
+    <div class="qr-code">
+        <img id="qrImage" alt="QR Code">
     </div>
+    <div class="qr-text">
+        <h3>Iscriviti alle attività</h3>
+        <p>Scansiona il QR code con il tuo smartphone</p>
+        <p id="qrFallback" style="display:none; margin-top:10px;">
+            <small>Oppure apri questo link: <a id="qrLink" href="#"></a></small>
+        </p>
+        <p><small>Riservato agli iscritti nella mailing list.</small></p>
+    </div>
+</div>
 
-    <script src="assets/attiv-script.js"></script>
+<style>
+.qr-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap; /* su mobile va a capo automaticamente */
+}
 
-    <!-- Generazione QR dinamico -->
-    <script>
-        (function () {
-            const subscribeUrl = new URL('subscribe/subscribe.html', window.location.href).href;
-            const img = document.getElementById('qrImage');
-            const fallback = document.getElementById('qrFallback');
-            const link = document.getElementById('qrLink');
-            link.href = subscribeUrl;
-            link.textContent = subscribeUrl;
-            img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' +
-                      encodeURIComponent(subscribeUrl);
-            img.addEventListener('error', () => {
-                img.style.display = 'none';
-                fallback.style.display = 'block';
-            });
-        })();
-    </script>
+.qr-code {
+    flex: 0 0 auto; /* il QR non si restringe */
+}
+
+.qr-code img {
+    display: block;
+    width: 160px;
+    height: 160px;
+}
+
+.qr-text {
+    flex: 1 1 250px; /* il testo occupa lo spazio rimanente */
+    min-width: 0;
+}
+
+.qr-text h3 {
+    margin-top: 0;
+}
+
+/* Su schermi molto stretti il QR torna sopra */
+@media (max-width: 400px) {
+    .qr-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+
+<script src="assets/attiv-script.js"></script>
+
+<script>
+    (function () {
+        const subscribeUrl = new URL('subscribe/subscribe.html', window.location.href).href;
+        const img = document.getElementById('qrImage');
+        const fallback = document.getElementById('qrFallback');
+        const link = document.getElementById('qrLink');
+        link.href = subscribeUrl;
+        link.textContent = subscribeUrl;
+        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' +
+                  encodeURIComponent(subscribeUrl);
+        img.addEventListener('error', () => {
+            img.style.display = 'none';
+            fallback.style.display = 'block';
+        });
+    })();
+</script>
 </body>
 </html>
