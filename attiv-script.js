@@ -1,4 +1,5 @@
 /* Attività Campus — attiv-script.js */
+/* cambiare questa url con https://script.google.com/macros/u/1/s/AKfycbzu-xk9oaE8O3ub1kjS6F7PwIwPPE8JObeHiikz2vR5ZGnfm1RsOVw91Sut4fJQV04PHQ/exec se si sposta il foglio excel */
 
 const WEB_APP_URL = 'https://script.google.com/a/macros/mail.scuole.vda.it/s/AKfycbwNo1UEbUwKCm_uSpdzAmA_vPy-6aB8KcgizyS8d_jZ33IbHL5kV0wZ3myDhmVktRk6Ug/exec';
 
