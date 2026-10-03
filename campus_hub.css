@@ -1,7 +1,5 @@
-/* ============================================================
-   CAMPUS HUB — Foglio di stile unificato v4
-   Include: campus_hub.css + campus-activities.css + token di campus-theme.css
-   Basta linkare SOLO questo file.
+/* ============================================================ 
+             CAMPUS HUB — Foglio di stile unificato
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -126,7 +124,7 @@ a { color: inherit; text-decoration: none; }
    4. HEADER HUB (tag header, NON .app-header)
    ============================================================ */
 header:not(.app-header) {
-    background: #45d7544c;
+    background: var(--bg-2);
     border: 1px solid var(--border);
     color: var(--text);
     padding: 14px 24px;
@@ -139,15 +137,16 @@ header:not(.app-header) {
     gap: 16px;
 }
 
+/* OFFLINE → giallo chiaro */
 body.mode-offline header:not(.app-header) {
-    background: #45d7544c;
-    border-color: var(--border);
+    background: #fef9c3;
+    border-color: rgba(202, 138, 4, 0.25);
 }
+/* ONLINE → bianco (come .app-header) */
 body.mode-online header:not(.app-header) {
-    background: rgba(37, 99, 235, 0.15);
-    border-color: rgba(37, 99, 235, 0.30);
+    background: var(--bg-2);
+    border-color: var(--border-2);
 }
-
 header:not(.app-header) > .header-brand { justify-self: start; }
 header:not(.app-header) > #digitalClock { justify-self: center; }
 header:not(.app-header) > .header-actions { justify-self: end; }
