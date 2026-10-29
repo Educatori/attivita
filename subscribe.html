@@ -6,21 +6,36 @@
     <title>Iscrizione Attività</title>
     <link rel="stylesheet" href="attiv.css">
     <!-- ===== PWA ===== -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Attività">
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js');
-    });
-  }
-</script>
-<!-- =============== -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Attività">
+    <script>
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+        window.addEventListener('load', async () => {
+            try {
+                const reg = await navigator.serviceWorker.register('sw.js');
+                reg.addEventListener('updatefound', () => {
+                    const nuovo = reg.installing;
+                    if (!nuovo) return;
+                    nuovo.addEventListener('statechange', () => {
+                        if (nuovo.state === 'installed' && navigator.serviceWorker.controller) {
+                            if (confirm('🔄 Nuova versione disponibile.\nAggiornare ora?')) {
+                                nuovo.postMessage({ type: 'SKIP_WAITING' });
+                                setTimeout(() => location.reload(), 400);
+                            }
+                        }
+                    });
+                });
+                setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
+            } catch (err) { console.warn('[SW]', err); }
+        });
+    }
+    </script>
+    <!-- =============== -->
 </head>
 <body>
     <div class="form-container">
@@ -29,15 +44,16 @@
         <form id="subscriptionForm">
             <div class="form-group">
                 <label for="email">Email*</label>
-                <input type="email" id="email" required placeholder="la_tua@email.com">
-                <p class="restricted">Devi essere nella mailing list del Campus.</p>
+                <input type="email" id="email" required placeholder="la_tua@email.com"
+                       aria-describedby="emailRestricted">
+                <p class="restricted" id="emailRestricted">Devi essere nella mailing list del Campus.</p>
             </div>
 
             <div class="form-group">
                 <label for="activity">Attività*</label>
-                <select id="activity" required>
-    <option value="">Caricamento...</option>
-</select>
+                <select id="activity" required disabled>
+                    <option value="">Caricamento...</option>
+                </select>
             </div>
 
             <div class="form-group">

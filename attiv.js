@@ -1,5 +1,4 @@
 /* Attività Campus — attiv.js */
-/* cambiare questa url con https://script.google.com/macros/u/1/s/AKfycbzu-xk9oaE8O3ub1kjS6F7PwIwPPE8JObeHiikz2vR5ZGnfm1RsOVw91Sut4fJQV04PHQ/exec se si sposta il foglio excel */
 
 const WEB_APP_URL = 'https://script.google.com/a/macros/mail.scuole.vda.it/s/AKfycbwNo1UEbUwKCm_uSpdzAmA_vPy-6aB8KcgizyS8d_jZ33IbHL5kV0wZ3myDhmVktRk6Ug/exec';
 
@@ -32,7 +31,6 @@ async function caricaAttivita() {
     if (!container) return;
 
     try {
-        // 1) Chiedi attività e statistiche in parallelo
         const [actRes, statRes] = await Promise.all([
             fetch(WEB_APP_URL + '?action=get_activities'),
             fetch(WEB_APP_URL + '?action=stats')
@@ -46,7 +44,6 @@ async function caricaAttivita() {
             return;
         }
 
-        // 2) Genera le card
         container.innerHTML = activities.map(function(a) {
             const s = statData[a.id] || { yes: 0, no: 0 };
             return `
@@ -84,6 +81,8 @@ async function initForm() {
         messageElement.textContent = testo;
         messageElement.className = 'message ' + tipo;
         messageElement.style.display = 'block';
+        messageElement.setAttribute('role', 'alert');
+        messageElement.setAttribute('aria-live', 'polite');
     }
 
     // Popola il select delle attività dal Web App
@@ -91,12 +90,23 @@ async function initForm() {
         const res = await fetch(WEB_APP_URL + '?action=get_activities');
         const data = await res.json();
         const activities = data.activities || [];
+
+        if (activities.length === 0) {
+            activitySelect.innerHTML = '<option value="">Nessuna attività disponibile</option>';
+            mostraMessaggio('Nessuna attività al momento. Riprova più tardi.', 'error');
+            return;
+        }
+
         activitySelect.innerHTML = '<option value="">Scegli...</option>' +
             activities.map(a =>
                 `<option value="${escapeHtml(a.id)}">${escapeHtml(a.giorno)} ${escapeHtml(a.ora)} - ${escapeHtml(a.nome)}</option>`
             ).join('');
+        activitySelect.disabled = false;
+
     } catch (err) {
         console.error('Errore caricamento attività nel form:', err);
+        activitySelect.innerHTML = '<option value="">Errore caricamento</option>';
+        mostraMessaggio('Impossibile caricare le attività. Riprova più tardi.', 'error');
     }
 
     // Submit

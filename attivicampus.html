@@ -5,22 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attività Campus</title>
     <link rel="stylesheet" href="attiv.css">
-   <!-- ===== PWA ===== -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Attività">
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js');
-    });
-  }
-</script>
-<!-- =============== -->
+    <!-- ===== PWA ===== -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Attività">
+    <script>
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+        window.addEventListener('load', async () => {
+            try {
+                const reg = await navigator.serviceWorker.register('sw.js');
+                reg.addEventListener('updatefound', () => {
+                    const nuovo = reg.installing;
+                    if (!nuovo) return;
+                    nuovo.addEventListener('statechange', () => {
+                        if (nuovo.state === 'installed' && navigator.serviceWorker.controller) {
+                            if (confirm('🔄 Nuova versione disponibile.\nAggiornare ora?')) {
+                                nuovo.postMessage({ type: 'SKIP_WAITING' });
+                                setTimeout(() => location.reload(), 400);
+                            }
+                        }
+                    });
+                });
+                setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
+            } catch (err) { console.warn('[SW]', err); }
+        });
+    }
+    </script>
+    <!-- =============== -->
 </head>
 <body>
     <div class="container">
@@ -35,30 +50,27 @@
             </div>
         </header>
 
-        <!-- Le card verranno generate qui via JavaScript -->
         <div class="day-container" id="dayContainer">
             <p style="color:var(--text-2);font-family:var(--font-mono);">Caricamento attività...</p>
         </div>
 
-        <!-- QR a sinistra, info al centro, link a destra -->
         <div class="qr-container">
             <div class="qr-code">
-                <img id="qrImage" alt="QR Code">
+                <img id="qrImage" alt="QR code per aprire il modulo di iscrizione alle attività">
             </div>
 
             <div class="qr-text">
-    <h3>Conferma la tua partecipazione</h3>
-    <p>inquadra il QR o clicca sul tasto</p>
-    <p id="qrFallback" style="display:none; margin-top:10px;">
-        <small>Oppure apri questo link: <a id="qrLink" href="#"></a></small>
-    </p>
-    <p><small>Riservato agli iscritti nella mailing list</small></p>
-</div>
+                <h3>Conferma la tua partecipazione</h3>
+                <p>inquadra il QR o clicca sul tasto</p>
+                <p id="qrFallback" style="display:none; margin-top:10px;">
+                    <small>Oppure apri questo link: <a id="qrLink" href="#"></a></small>
+                </p>
+                <p><small>Riservato agli iscritti nella mailing list</small></p>
+            </div>
 
             <a id="qrButton" class="btn" href="#" target="_blank" rel="noopener">
-    Apri modulo
-</a>
-            
+                Apri modulo
+            </a>
         </div>
     </div>
 
@@ -75,11 +87,7 @@
         box-shadow: var(--shadow-sm);
         margin-top: 24px;
     }
-
-    /* QR a sinistra */
-    .qr-code {
-        flex: 0 0 auto;
-    }
+    .qr-code { flex: 0 0 auto; }
     .qr-code img {
         display: block;
         width: 160px;
@@ -89,8 +97,6 @@
         padding: 6px;
         background: white;
     }
-
-    /* Info al centro */
     .qr-text {
         flex: 1 1 200px;
         min-width: 0;
@@ -109,8 +115,6 @@
         color: var(--text-2);
         margin-bottom: 8px;
     }
-
-    /* Link a destra */
     .qr-action {
         flex: 0 0 auto;
         display: flex;
@@ -123,8 +127,6 @@
         text-align: center;
         white-space: nowrap;
     }
-
-    /* Mobile: torna in colonna */
     @media (max-width: 700px) {
         .qr-container {
             flex-direction: column;
