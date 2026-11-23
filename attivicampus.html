@@ -9,6 +9,21 @@
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="icon" href="favicon.ico" sizes="any" type="image/x-icon">
 <link rel="apple-touch-icon" href="icon-192.png">
+    <script>
+  // ── Pulizia: deregistra eventuali service worker precedenti ──
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(reg => {
+        reg.unregister();
+        console.log('🗑️ Service worker deregistrato:', reg.scope);
+      });
+    });
+    // Svuota anche le cache lasciate dal vecchio SW
+    if ('caches' in window) {
+      caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+    }
+  }
+</script>
 </head>
 <body>
     <div class="container">
